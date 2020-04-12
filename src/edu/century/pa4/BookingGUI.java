@@ -10,7 +10,7 @@ import javax.swing.*;
 public class BookingGUI extends JFrame implements ActionListener {
 	
 	//instance variables
-	private Passenger[] passengers;
+	private Reservation[] passengers;
 	private int numPassengers;
 	private int numReservation;
 	private JLabel fNameL = new JLabel("First Name");
@@ -26,7 +26,7 @@ public class BookingGUI extends JFrame implements ActionListener {
 	private JTextField toE = new JTextField(16);
 	private JTextField departDateE = new JTextField(10);
 	private JTextField returnDateE = new JTextField(10);
-	private JComboBox seatE = new JComboBox(createSeats());
+	private JComboBox seatE = new JComboBox(createSeats(28));
 	private JButton bookBtn = new JButton("Book");
 	private JButton listResBtn = new JButton("List Reservations");
 	private JButton clearBtn = new JButton("Clear Console");
@@ -100,10 +100,7 @@ public class BookingGUI extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		String callingBtn = e.getActionCommand();
 		if(callingBtn.equalsIgnoreCase("Book")) {
-			seatCheck(seatE.getSelectedItem());
-			Date departDate = dateCheck(departDateE.getText());
-			Date returnDate = dateCheck(returnDateE.getText());
-			createBooking(fNameE.getText(), lNameE.getText(), numReservation, String.valueOf(seatE.getSelectedItem()), fromE.getText(), toE.getText(), departDate, returnDate);
+			createBooking(fNameE.getText(), lNameE.getText(), numReservation, seatE.getSelectedItem(), fromE.getText(), toE.getText(), departDateE.getText(), returnDateE.getText());
 		} else if (callingBtn.equalsIgnoreCase("List Reservations")) {
 			listReservations();
 		} else if (callingBtn.equalsIgnoreCase("Clear Console")) {
@@ -112,52 +109,69 @@ public class BookingGUI extends JFrame implements ActionListener {
 	}
 	
 	//create the new booking
-	private void createBooking(String fName, String lName, int numRes, String seat, String from, String to, Date departDate, Date returnDate) {
-		passengers[numPassengers] = new Passenger(fName, lName, numRes, seat, from, to, departDate, returnDate);
-		numPassengers++;
-		numReservation++;
-		System.out.println("Reservation completed for " + fNameE.getText() + "!");	
+	private void createBooking(String fName, String lName, int numRes, Object seat, String from, String to, String departDate, String returnDate) {
+		if(dateCheck(departDateE.getText()) & dateCheck(returnDateE.getText()) & seatCheck(seatE.getSelectedItem())) {
+			Date dd = dateCreate(departDate);
+			Date rd = dateCreate(returnDate);
+			passengers[numPassengers] = new Reservation(fName, lName, numRes, seat, from, to, dd, rd);
+			numPassengers++;
+			numReservation++;
+			console.append("Reservation completed for " + fNameE.getText() + "!\n");	
+		}
 	}
 	
 	//check date format
-	private Date dateCheck(String date) {
-		Date dateGood = new Date();
+	private boolean dateCheck(String date) {
+		boolean dateCheck = true;
 		try {
-			dateGood = new SimpleDateFormat("dd/mm/yyyy").parse(date);
+			new SimpleDateFormat("dd/mm/yyyy").parse(date);
 		} catch (ParseException e1) {
-			System.out.println("Invalid Date Format!  Please use dd/mm/yyyy");
+			console.append("Invalid Date Format!  Please use dd/mm/yyyy\n");
+			dateCheck = false;
 		}		
-		return dateGood;
+		return dateCheck;
+	}
+	
+	//create date variable
+	private Date dateCreate(String date) {
+		Date goodDate = new Date();
+		try {
+			goodDate = new SimpleDateFormat("dd/mm/yyyy").parse(date);
+		} catch (ParseException e1) {
+			return null;
+		}		
+		return goodDate;
 	}
 
 	//check for repeated seats
-	private void seatCheck(Object seat) {
+	private boolean seatCheck(Object seat) {
+		boolean seatCheck = true;
 		if(numPassengers != 0) {
 			for (int i = 0; i < numPassengers; i++) {
 				int j = passengers[i].getReservationNo();
 				if(passengers[i].reservation[j].getSeat().equals(seat)) {
-					System.out.println("This seat has already been reserved.  Please choose another.");
-					return;
+					console.append("This seat has already been reserved.  Please choose another.\n");
+					seatCheck = false;
+					return seatCheck;
 				}
-				else
-					continue;
 			}
-		}		
+		}	
+		return seatCheck;
 	}
 
 	//output a reservation list
 	private void listReservations() {
 		if (numPassengers != 0) {
 			for (int i = 0; i < numPassengers; i++)
-				System.out.println(passengers[i].toString());
+				console.append(passengers[i].toString());
 		} else {
-			System.out.println("There are no passengers currently reserved.");
+			console.append("There are no passengers currently reserved.\n");
 		}
 	}
 
 	//create the seat choices for the combobox
-	private String[] createSeats() {
-		String[] seats = new String[28];
+	private String[] createSeats(int size) {
+		String[] seats = new String[size];
 		String[] seat = {"a", "b", "c", "d"};
 		String[] row = {"1", "2", "3", "4", "5", "6", "7"};
 		int k = 0;

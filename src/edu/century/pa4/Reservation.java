@@ -5,24 +5,16 @@ import java.util.Date;
 public class Reservation extends Passenger{
 	
 	//instance variables
-	private String seat;
+	private Object seat;
 	private String from;
 	private String to;
 	private Date departureDate;
 	private Date returnDate;
-	
-	
-	//default constructor
-	public Reservation() {
-		this.seat = null;
-		this.from = null;
-		this.to = null;
-		this.departureDate = new Date();
-		this.returnDate = new Date();
-	}
+
 	
 	//constructor with input
-	public Reservation(String seat, String from, String to, Date departureDate, Date returnDate) {
+	public Reservation(String fName, String lName, int reservationNo, Object seat, String from, String to, Date departureDate, Date returnDate) {
+		super(fName, lName, reservationNo);
 		this.setSeat(seat);
 		this.setFrom(from);
 		this.setTo(to);
@@ -38,11 +30,11 @@ public class Reservation extends Passenger{
 	}
 
 	//getters and setters
-	public String getSeat() {
+	public Object getSeat() {
 		return seat;
 	}
 
-	public void setSeat(String seat) {
+	public void setSeat(Object seat) {
 		this.seat = seat;
 	}
 

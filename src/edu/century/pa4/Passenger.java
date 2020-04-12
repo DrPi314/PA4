@@ -1,7 +1,5 @@
 package edu.century.pa4;
 
-import java.util.Date;
-
 //to store passenger information
 public class Passenger {
 	private String fName;
@@ -9,22 +7,11 @@ public class Passenger {
 	private int reservationNo;
 	Reservation[] reservation;
 	
-	//default constructor
-	public Passenger() {
-		super();
-		this.fName = null;
-		this.lName = null;
-		this.reservationNo = 0;
-		this.reservation[reservationNo] = new Reservation();
-	}
-	
 	//constructor with input
-	public Passenger(String fName, String lName, int reservationNo, String seat, String from, String to, Date departureDate, Date returnDate) {
-		super();
+	public Passenger(String fName, String lName, int reservationNo) {
 		this.setfName(fName);
 		this.setlName(lName);
 		this.setReservationNo(reservationNo);
-		this.reservation[reservationNo] = new Reservation(seat, from, to, departureDate, returnDate);
 	}
 	
 	//toString override
