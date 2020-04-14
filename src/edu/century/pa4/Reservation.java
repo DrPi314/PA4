@@ -18,7 +18,7 @@ public class Reservation extends Passenger{
 		this.setFrom(null);
 		this.setTo(null);
 		this.setDepartureDate(null);
-		this.setReturnDate(null, null);
+		this.setReturnDate(null);
 	}
 	
 	//constructor with input
@@ -28,7 +28,7 @@ public class Reservation extends Passenger{
 		this.setFrom(from);
 		this.setTo(to);
 		this.setDepartureDate(departureDate);
-		this.setReturnDate(departureDate, returnDate);
+		this.setReturnDate(returnDate);
 	}
 	
 	//toString override
@@ -75,16 +75,8 @@ public class Reservation extends Passenger{
 		return returnDate;
 	}
 
-	public void setReturnDate(Date departureDate, Date returnDate) {
-		if(returnDate != null) {
-			if(returnDate.after(departureDate)) {
-				this.returnDate = returnDate;
-			} else {
-				System.out.println("Invalid return date, please try another...");
-			}
-		} else {
-			this.returnDate = null;
-		}
+	public void setReturnDate(Date returnDate) {
+		this.returnDate = returnDate;
 	}
 		
 }

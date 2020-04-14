@@ -110,13 +110,13 @@ public class BookingGUI extends JFrame implements ActionListener {
 	//create the new booking
 	private Reservation[] createBooking(String fName, String lName, int numRes, Object seat, String from, String to, String departDate, String returnDate) {
 		Reservation[] p = passengers;
-		if(dateCheck(departDateE.getText()) & dateCheck(returnDateE.getText()) & seatCheck(seatE.getSelectedItem())) {
+		Date dd = dateCreate(departDate);
+		Date rd = dateCreate(returnDate);
+		if(dateCheck(departDateE.getText()) & dateCheck(returnDateE.getText()) & checkReturnDate(dd, rd) & seatCheck(seatE.getSelectedItem())) {
 			p = new Reservation[numReservation + 1];
 			for (int i = 0; i < numReservation; i++) {
 				p[i] = passengers[i];
 			}
-			Date dd = dateCreate(departDate);
-			Date rd = dateCreate(returnDate);
 			passengers[++numReservation] = new Reservation(fName, lName, numRes, seat, from, to, dd, rd);
 			console.append("Reservation completed for " + fNameE.getText() + "!\n");
 			passengers = p;
@@ -136,6 +136,22 @@ public class BookingGUI extends JFrame implements ActionListener {
 			dateCheck = false;
 		}		
 		return dateCheck;
+	}
+	
+	//check date order
+	public boolean checkReturnDate(Date departureDate, Date returnDate) {
+		boolean returnGood = false;
+		if(returnDate != null) {
+			if(returnDate.after(departureDate)) {
+				returnGood = true;
+			} else {
+				console.append("Return must follow Departure.\n");
+				returnGood = false;
+			}
+		} else {
+			console.append("No return date has been entered.\n");
+		}
+		return returnGood;
 	}
 	
 	//create date variable
