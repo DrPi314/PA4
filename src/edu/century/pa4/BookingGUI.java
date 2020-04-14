@@ -11,7 +11,7 @@ public class BookingGUI extends JFrame implements ActionListener {
 	
 	//instance variables
 	private static int numReservation = 0;
-	private Reservation[] passengers;
+	private Reservation[] passengers = null;
 	private JLabel fNameL = new JLabel("First Name");
 	private JLabel lNameL = new JLabel("Last Name");
 	private JLabel fromL = new JLabel("From");
@@ -109,10 +109,10 @@ public class BookingGUI extends JFrame implements ActionListener {
 	
 	//create the new booking
 	private Reservation[] createBooking(String fName, String lName, int numRes, Object seat, String from, String to, String departDate, String returnDate) {
-		Reservation[] p = passengers;
+		Reservation[] p = this.passengers;
 		Date dd = dateCreate(departDate);
 		Date rd = dateCreate(returnDate);
-		if(dateCheck(departDateE.getText()) & dateCheck(returnDateE.getText()) & checkReturnDate(dd, rd) & seatCheck(seatE.getSelectedItem())) {
+		if(dateCheck(departDateE.getText()) & dateCheck(returnDateE.getText()) & checkReturnDate(dd, rd) & seatCheck(seatE.getSelectedItem(), passengers)) {
 			p = new Reservation[numReservation + 1];
 			for (int i = 0; i < numReservation; i++) {
 				p[i] = passengers[i];
@@ -132,7 +132,7 @@ public class BookingGUI extends JFrame implements ActionListener {
 		try {
 			new SimpleDateFormat("mm/dd/yyyy").parse(date);
 		} catch (ParseException e1) {
-			console.append("Invalid Date Format!  Please use dd/mm/yyyy\n");
+			console.append("Invalid Date Format!  Please use mm/dd/yyyy\n");
 			dateCheck = false;
 		}		
 		return dateCheck;
@@ -166,11 +166,11 @@ public class BookingGUI extends JFrame implements ActionListener {
 	}
 
 	//check for repeated seats
-	private boolean seatCheck(Object seat) {
+	private boolean seatCheck(Object seat, Reservation[] p) {
 		boolean seatCheck = true;
 		if(numReservation != 0) {
 			for (int i = 0; i < numReservation; i++) {
-				if(passengers[i].reservation[i].getSeat().equals(seat)) {
+				if(passengers[i].getSeat().equals(seat)) {
 					console.append("This seat has already been reserved.  Please choose another.\n");
 					seatCheck = false;
 					return seatCheck;
