@@ -10,7 +10,16 @@ public class Reservation extends Passenger{
 	private String to;
 	private Date departureDate;
 	private Date returnDate;
-
+	
+	//Default Constructor
+	public Reservation() {
+		super();
+		this.setSeat(null);
+		this.setFrom(null);
+		this.setTo(null);
+		this.setDepartureDate(null);
+		this.setReturnDate(null, null);
+	}
 	
 	//constructor with input
 	public Reservation(String fName, String lName, int reservationNo, Object seat, String from, String to, Date departureDate, Date returnDate) {
@@ -67,10 +76,14 @@ public class Reservation extends Passenger{
 	}
 
 	public void setReturnDate(Date departureDate, Date returnDate) {
-		if(returnDate.after(departureDate)) {
-			this.returnDate = returnDate;
+		if(returnDate != null) {
+			if(returnDate.after(departureDate)) {
+				this.returnDate = returnDate;
+			} else {
+				System.out.println("Invalid return date, please try another...");
+			}
 		} else {
-			System.out.println("Invalid return date, please try another...");
+			this.returnDate = null;
 		}
 	}
 		

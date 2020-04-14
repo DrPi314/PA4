@@ -7,6 +7,13 @@ public class Passenger {
 	private int reservationNo;
 	Reservation[] reservation;
 	
+	//default constructor
+	public Passenger() {
+		this.setfName(null);
+		this.setlName(null);
+		this.setReservationNo(0);
+	}
+	
 	//constructor with input
 	public Passenger(String fName, String lName, int reservationNo) {
 		this.setfName(fName);

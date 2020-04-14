@@ -10,9 +10,8 @@ import javax.swing.*;
 public class BookingGUI extends JFrame implements ActionListener {
 	
 	//instance variables
+	private static int numReservation = 0;
 	private Reservation[] passengers;
-	private int numPassengers;
-	private int numReservation;
 	private JLabel fNameL = new JLabel("First Name");
 	private JLabel lNameL = new JLabel("Last Name");
 	private JLabel fromL = new JLabel("From");
@@ -100,31 +99,38 @@ public class BookingGUI extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		String callingBtn = e.getActionCommand();
 		if(callingBtn.equalsIgnoreCase("Book")) {
-			createBooking(fNameE.getText(), lNameE.getText(), numReservation, seatE.getSelectedItem(), fromE.getText(), toE.getText(), departDateE.getText(), returnDateE.getText());
+			passengers = createBooking(fNameE.getText(), lNameE.getText(), numReservation, seatE.getSelectedItem(), fromE.getText(), toE.getText(), departDateE.getText(), returnDateE.getText());
 		} else if (callingBtn.equalsIgnoreCase("List Reservations")) {
 			listReservations();
 		} else if (callingBtn.equalsIgnoreCase("Clear Console")) {
-			console.setText(null);
+			console.setText("");
 		}
 	}
 	
 	//create the new booking
-	private void createBooking(String fName, String lName, int numRes, Object seat, String from, String to, String departDate, String returnDate) {
+	private Reservation[] createBooking(String fName, String lName, int numRes, Object seat, String from, String to, String departDate, String returnDate) {
+		Reservation[] p = passengers;
 		if(dateCheck(departDateE.getText()) & dateCheck(returnDateE.getText()) & seatCheck(seatE.getSelectedItem())) {
+			p = new Reservation[numReservation + 1];
+			for (int i = 0; i < numReservation; i++) {
+				p[i] = passengers[i];
+			}
 			Date dd = dateCreate(departDate);
 			Date rd = dateCreate(returnDate);
-			passengers[numPassengers] = new Reservation(fName, lName, numRes, seat, from, to, dd, rd);
-			numPassengers++;
-			numReservation++;
-			console.append("Reservation completed for " + fNameE.getText() + "!\n");	
+			passengers[++numReservation] = new Reservation(fName, lName, numRes, seat, from, to, dd, rd);
+			console.append("Reservation completed for " + fNameE.getText() + "!\n");
+			passengers = p;
+		} else {
+			console.append("Could not create reservation, please try again...\n");
 		}
+		return p;
 	}
 	
 	//check date format
 	private boolean dateCheck(String date) {
 		boolean dateCheck = true;
 		try {
-			new SimpleDateFormat("dd/mm/yyyy").parse(date);
+			new SimpleDateFormat("mm/dd/yyyy").parse(date);
 		} catch (ParseException e1) {
 			console.append("Invalid Date Format!  Please use dd/mm/yyyy\n");
 			dateCheck = false;
@@ -136,9 +142,9 @@ public class BookingGUI extends JFrame implements ActionListener {
 	private Date dateCreate(String date) {
 		Date goodDate = new Date();
 		try {
-			goodDate = new SimpleDateFormat("dd/mm/yyyy").parse(date);
+			goodDate = new SimpleDateFormat("mm/dd/yyyy").parse(date);
 		} catch (ParseException e1) {
-			return null;
+			return goodDate;
 		}		
 		return goodDate;
 	}
@@ -146,23 +152,22 @@ public class BookingGUI extends JFrame implements ActionListener {
 	//check for repeated seats
 	private boolean seatCheck(Object seat) {
 		boolean seatCheck = true;
-		if(numPassengers != 0) {
-			for (int i = 0; i < numPassengers; i++) {
-				int j = passengers[i].getReservationNo();
-				if(passengers[i].reservation[j].getSeat().equals(seat)) {
+		if(numReservation != 0) {
+			for (int i = 0; i < numReservation; i++) {
+				if(passengers[i].reservation[i].getSeat().equals(seat)) {
 					console.append("This seat has already been reserved.  Please choose another.\n");
 					seatCheck = false;
 					return seatCheck;
 				}
 			}
-		}	
+		}
 		return seatCheck;
 	}
 
 	//output a reservation list
 	private void listReservations() {
-		if (numPassengers != 0) {
-			for (int i = 0; i < numPassengers; i++)
+		if (numReservation != 0) {
+			for (int i = 0; i < numReservation; i++)
 				console.append(passengers[i].toString());
 		} else {
 			console.append("There are no passengers currently reserved.\n");
