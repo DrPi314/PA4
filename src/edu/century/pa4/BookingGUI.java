@@ -112,7 +112,7 @@ public class BookingGUI extends JFrame implements ActionListener {
 		Reservation[] p = this.passengers;
 		Date dd = dateCreate(departDate);
 		Date rd = dateCreate(returnDate);
-		if(dateCheck(departDate) & dateCheck(returnDate) & checkReturnDate(dd, rd) & seatCheck(seatE.getSelectedItem(), passengers)) {
+		if(dateCheck(departDate) & dateCheck(returnDate) & checkReturnDate(dd, rd) & seatCheck(seatE.getSelectedItem(), p)) {
 			passengers = new Reservation[numReservation + 1];
 			for (int i = 0; i < numReservation; i++) {
 				passengers[i] = p[i];
