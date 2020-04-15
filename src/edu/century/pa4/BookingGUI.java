@@ -11,7 +11,7 @@ public class BookingGUI extends JFrame implements ActionListener {
 	
 	//instance variables
 	private static int numReservation = 0;
-	private Reservation[] passengers = null;
+	private Reservation[] passengers = new Reservation[0];
 	private JLabel fNameL = new JLabel("First Name");
 	private JLabel lNameL = new JLabel("Last Name");
 	private JLabel fromL = new JLabel("From");
@@ -101,7 +101,7 @@ public class BookingGUI extends JFrame implements ActionListener {
 		if(callingBtn.equalsIgnoreCase("Book")) {
 			passengers = createBooking(fNameE.getText(), lNameE.getText(), numReservation, seatE.getSelectedItem(), fromE.getText(), toE.getText(), departDateE.getText(), returnDateE.getText());
 		} else if (callingBtn.equalsIgnoreCase("List Reservations")) {
-			listReservations();
+			listReservations(passengers);
 		} else if (callingBtn.equalsIgnoreCase("Clear Console")) {
 			console.setText("");
 		}
@@ -112,29 +112,35 @@ public class BookingGUI extends JFrame implements ActionListener {
 		Reservation[] p = this.passengers;
 		Date dd = dateCreate(departDate);
 		Date rd = dateCreate(returnDate);
-		if(dateCheck(departDateE.getText()) & dateCheck(returnDateE.getText()) & checkReturnDate(dd, rd) & seatCheck(seatE.getSelectedItem(), passengers)) {
-			p = new Reservation[numReservation + 1];
+		if(dateCheck(departDate) & dateCheck(returnDate) & checkReturnDate(dd, rd) & seatCheck(seatE.getSelectedItem(), passengers)) {
+			passengers = new Reservation[numReservation + 1];
 			for (int i = 0; i < numReservation; i++) {
-				p[i] = passengers[i];
+				passengers[i] = p[i];
 			}
-			passengers[++numReservation] = new Reservation(fName, lName, numRes, seat, from, to, dd, rd);
+			passengers[numReservation] = new Reservation(fName, lName, ++numRes, seat, from, to, dd, rd);
 			console.append("Reservation completed for " + fNameE.getText() + "!\n");
-			passengers = p;
+			p = passengers;
+			++numReservation;
+			return p;
 		} else {
 			console.append("Could not create reservation, please try again...\n");
+			return null;
 		}
-		return p;
 	}
 	
 	//check date format
 	private boolean dateCheck(String date) {
 		boolean dateCheck = true;
-		try {
-			new SimpleDateFormat("mm/dd/yyyy").parse(date);
-		} catch (ParseException e1) {
-			console.append("Invalid Date Format!  Please use mm/dd/yyyy\n");
+		if(date.isEmpty()) {
+			console.append("Date is missing\n");
 			dateCheck = false;
-		}		
+		} else {
+			try {
+				new SimpleDateFormat("MM/dd/yyyy").parse(date);
+			} catch (ParseException e1) {
+				dateCheck = false;
+			}		
+		}
 		return dateCheck;
 	}
 	
@@ -146,23 +152,21 @@ public class BookingGUI extends JFrame implements ActionListener {
 				returnGood = true;
 			} else {
 				console.append("Return must follow Departure.\n");
-				returnGood = false;
 			}
-		} else {
-			console.append("No return date has been entered.\n");
 		}
 		return returnGood;
 	}
 	
 	//create date variable
 	private Date dateCreate(String date) {
-		Date goodDate = new Date();
+		SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 		try {
-			goodDate = new SimpleDateFormat("mm/dd/yyyy").parse(date);
-		} catch (ParseException e1) {
+			Date goodDate = formatter.parse(date);
 			return goodDate;
+		} catch (ParseException e1) {
+			console.append("Invalid Date Format!  Please use mm/dd/yyyy\n");
+			return null;
 		}		
-		return goodDate;
 	}
 
 	//check for repeated seats
@@ -170,7 +174,7 @@ public class BookingGUI extends JFrame implements ActionListener {
 		boolean seatCheck = true;
 		if(numReservation != 0) {
 			for (int i = 0; i < numReservation; i++) {
-				if(passengers[i].getSeat().equals(seat)) {
+				if(p[i].getSeat().toString().equalsIgnoreCase(seat.toString())) {
 					console.append("This seat has already been reserved.  Please choose another.\n");
 					seatCheck = false;
 					return seatCheck;
@@ -181,7 +185,7 @@ public class BookingGUI extends JFrame implements ActionListener {
 	}
 
 	//output a reservation list
-	private void listReservations() {
+	private void listReservations(Reservation[] passengers) {
 		if (numReservation != 0) {
 			for (int i = 0; i < numReservation; i++)
 				console.append(passengers[i].toString());

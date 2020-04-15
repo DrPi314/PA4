@@ -34,7 +34,7 @@ public class Reservation extends Passenger{
 	//toString override
 	@Override
 	public String toString() {
-		String reserveOut = "Seat: " + this.getSeat() + "\nFrom: " + this.getFrom() + "\nTo: " + this.getTo() + "\nDeparture: " + this.getDepartureDate() + "\nReturn: " + this.getReturnDate();
+		String reserveOut = super.toString() + "Seat: " + this.getSeat() + "\nFrom: " + this.getFrom() + "\nTo: " + this.getTo() + "\nDeparture: " + this.getDepartureDate() + "\nReturn: " + this.getReturnDate();
 		return reserveOut;
 	}
 

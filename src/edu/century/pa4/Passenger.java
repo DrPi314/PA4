@@ -24,7 +24,7 @@ public class Passenger {
 	//toString override
 	@Override
 	public String toString() {
-		String passengerOut = "****Reservation " + this.getReservationNo() + "****\nFirst Name: " + this.getfName() + "\nLast Name: " + this.getlName() + "\n" + reservation[this.getReservationNo()].toString();
+		String passengerOut = "****Reservation " + this.getReservationNo() + "****\nFirst Name: " + this.getfName() + "\nLast Name: " + this.getlName() + "\n";
 		return passengerOut;
 	}
 
