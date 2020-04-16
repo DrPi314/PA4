@@ -26,9 +26,9 @@ public class Reservation extends Passenger{
 	}
 	
 	//constructor with input
-	public Reservation(String fName, String lName, int reservationNo, String seat, String from, String to, String departureDate, String returnDate) {
-		super(fName, lName, reservationNo);
-		this.setSeat(seatCheck(seat, reservationNo));
+	public Reservation(String fName, String lName, String seat, String from, String to, String departureDate, String returnDate) {
+		super(fName, lName, BookingGUI.numReservation);
+		this.setSeat(seatCheck(seat, BookingGUI.numReservation));
 		this.setFrom(from);
 		this.setTo(to);
 		this.setDepartureDate(dateCreate(departureDate));
@@ -48,7 +48,7 @@ public class Reservation extends Passenger{
 		String[][] seatAssign = new String[28][2];
 		for(int i = 0; i < 28; i++) {
 			seatAssign[i][0] = seats[i];
-			seatAssign[i][1] = "0";
+			seatAssign[i][1] = "empty";
 		}
 		return seatAssign;
 	}
@@ -73,18 +73,19 @@ public class Reservation extends Passenger{
 	public String seatCheck(String seat, int r) {
 		String setSeat = null;
 		if(seat != null) {
-			boolean isEmpty = true;
 			String[][] s = BookingGUI.getSeatAssign();
 			for(int i = 0; i < 28; i++) {
-				if(s[i][1].equalsIgnoreCase("0")) {
-					s[i][1] = "" + r;
+				if(s[i][0].equalsIgnoreCase(seat))
+					if(s[i][1].equalsIgnoreCase("empty")) {
+						s[i][1] = "" + r;
+						return setSeat;
 				} else {
-					isEmpty = false;
 					reservationError = true;
 				}
 			}
-			if(!isEmpty)
-				BookingGUI.consoleAppend("Seat is taken, try another.\n");
+			BookingGUI.consoleAppend("Seat is taken, try another.\n");
+		} else {
+			BookingGUI.consoleAppend("Please choose a seat.\n");
 		}
 		return setSeat;
 	}

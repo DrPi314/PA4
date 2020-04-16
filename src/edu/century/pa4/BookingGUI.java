@@ -10,7 +10,7 @@ import javax.swing.*;
 public class BookingGUI extends JFrame implements ActionListener {
 	
 	//instance variables
-	private static int numReservation = 0;
+	static int numReservation = 0;
 	private Reservation[] passengers;
 	private static String[][] seatAssign = Reservation.setSeatAssign();
 	private JLabel fNameL = new JLabel("First Name");
@@ -100,7 +100,7 @@ public class BookingGUI extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		String callingBtn = e.getActionCommand();
 		if(callingBtn.equalsIgnoreCase("Book")) {
-			passengers = createBooking(fNameE.getText(), lNameE.getText(), numReservation, seatE.getSelectedItem().toString(), fromE.getText(), toE.getText(), departDateE.getText(), returnDateE.getText());
+			passengers = createBooking(fNameE.getText(), lNameE.getText(), seatE.getSelectedItem().toString(), fromE.getText(), toE.getText(), departDateE.getText(), returnDateE.getText());
 		} else if (callingBtn.equalsIgnoreCase("List Reservations")) {
 			listReservations(passengers);
 		} else if (callingBtn.equalsIgnoreCase("Clear Console")) {
@@ -114,20 +114,21 @@ public class BookingGUI extends JFrame implements ActionListener {
 	}
 	
 	//create the new booking
-	private Reservation[] createBooking(String fName, String lName, int numRes, String seat, String from, String to, String departDate, String returnDate) {
+	private Reservation[] createBooking(String fName, String lName, String seat, String from, String to, String departDate, String returnDate) {
 		Reservation[] p = this.passengers;
-		do {
-			console.append("Please input valid Reservation:\n");
-			passengers = new Reservation[numReservation + 1];
-			for (int i = 0; i < numReservation; i++) {
+		Reservation p1 = new Reservation(fName, lName, seat, from, to, departDate, returnDate);
+		if(!Reservation.reservationError) {
+			passengers = new Reservation[++numReservation];
+			for (int i = 0; i < p.length; i++) {
 				passengers[i] = p[i];
 			}
-			passengers[numReservation] = new Reservation(fName, lName, ++numRes, seat, from, to, departDate, returnDate);
+			passengers[numReservation] = p1;
 			console.append("Reservation completed for " + fNameE.getText() + "!\n");
 			p = passengers;
-			++numReservation;
 			return p;
-		} while (!Reservation.reservationError);
+		} else
+			console.append("Please input valid Reservation:\n");
+			return null;
 	}
 	
 	//create list for JComboBox
