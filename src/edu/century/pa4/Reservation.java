@@ -28,7 +28,7 @@ public class Reservation extends Passenger{
 	//constructor with input
 	public Reservation(String fName, String lName, int reservationNo, String seat, String from, String to, String departureDate, String returnDate) {
 		super(fName, lName, reservationNo);
-		this.seatCheck(seat, reservationNo);
+		this.setSeat(seatCheck(seat, reservationNo));
 		this.setFrom(from);
 		this.setTo(to);
 		this.setDepartureDate(dateCreate(departureDate));
@@ -38,7 +38,7 @@ public class Reservation extends Passenger{
 	//toString override
 	@Override
 	public String toString() {
-		String reserveOut = super.toString() + "Seat: " + this.getSeat() + "\nFrom: " + this.getFrom() + "\nTo: " + this.getTo() + "\nDeparture: " + this.getDepartureDate() + "\nReturn: " + this.getReturnDate();
+		String reserveOut = super.toString() + "Seat: " + this.getSeat() + "\nFrom: " + this.getFrom() + "\nTo: " + this.getTo() + "\nDeparture: " + this.getDepartureDate() + "\nReturn: " + this.getReturnDate() + "\n";
 		return reserveOut;
 	}
 	
@@ -70,18 +70,23 @@ public class Reservation extends Passenger{
 	}
 	
 	//check for empty seat and assign if previously empty
-	public void seatCheck(String seat, int r) {
-			if(seat != null) {
+	public String seatCheck(String seat, int r) {
+		String setSeat = null;
+		if(seat != null) {
+			boolean isEmpty = true;
 			String[][] s = BookingGUI.getSeatAssign();
 			for(int i = 0; i < 28; i++) {
 				if(s[i][1].equalsIgnoreCase("0")) {
 					s[i][1] = "" + r;
 				} else {
-					BookingGUI.consoleAppend("Seat is taken, try another.\n");
+					isEmpty = false;
 					reservationError = true;
 				}
 			}
+			if(!isEmpty)
+				BookingGUI.consoleAppend("Seat is taken, try another.\n");
 		}
+		return setSeat;
 	}
 	
 	//check date format
@@ -91,7 +96,7 @@ public class Reservation extends Passenger{
 			reservationError = true;
 		} else {
 			try {
-				new SimpleDateFormat("MM/dd/yyyy").parse(date);
+				new SimpleDateFormat("MM-dd-yyyy").parse(date);
 			} catch (ParseException e1) {
 				reservationError = true;
 			}		
@@ -115,12 +120,12 @@ public class Reservation extends Passenger{
 	//create date variable
 	Date dateCreate(String date) {
 		dateCheck(date);
-		SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+		SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
 		try {
 			Date goodDate = formatter.parse(date);
 			return goodDate;
 		} catch (ParseException e1) {
-			BookingGUI.consoleAppend("Invalid Date Format!  Please use mm/dd/yyyy\n");
+			BookingGUI.consoleAppend("Invalid Date Format!  Please use mm-dd-yyyy\n");
 			return null;
 		}		
 	}
