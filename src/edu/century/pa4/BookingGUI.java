@@ -11,7 +11,8 @@ public class BookingGUI extends JFrame implements ActionListener {
 	
 	//instance variables
 	private static int numReservation = 0;
-	private Reservation[] passengers = new Reservation[0];
+	private Reservation[] passengers;
+	private static String[][] seatAssign = Reservation.setSeatAssign();
 	private JLabel fNameL = new JLabel("First Name");
 	private JLabel lNameL = new JLabel("Last Name");
 	private JLabel fromL = new JLabel("From");
@@ -25,11 +26,11 @@ public class BookingGUI extends JFrame implements ActionListener {
 	private JTextField toE = new JTextField(16);
 	private JTextField departDateE = new JTextField(10);
 	private JTextField returnDateE = new JTextField(10);
-	private JComboBox seatE = new JComboBox(createSeats(28));
+	private JComboBox seatE = new JComboBox(comboAssembler());
 	private JButton bookBtn = new JButton("Book");
 	private JButton listResBtn = new JButton("List Reservations");
 	private JButton clearBtn = new JButton("Clear Console");
-	private JTextArea console = new JTextArea(8,64);
+	private static JTextArea console = new JTextArea(8,64);
 	private JPanel topPanel = new JPanel(new GridLayout(4,4));
 	private JPanel btnPanel = new JPanel(new FlowLayout());
 	private JPanel bottomPanel = new JPanel(new BorderLayout());
@@ -99,7 +100,7 @@ public class BookingGUI extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		String callingBtn = e.getActionCommand();
 		if(callingBtn.equalsIgnoreCase("Book")) {
-			passengers = createBooking(fNameE.getText(), lNameE.getText(), numReservation, seatE.getSelectedItem(), fromE.getText(), toE.getText(), departDateE.getText(), returnDateE.getText());
+			passengers = createBooking(fNameE.getText(), lNameE.getText(), numReservation, seatE.getSelectedItem().toString(), fromE.getText(), toE.getText(), departDateE.getText(), returnDateE.getText());
 		} else if (callingBtn.equalsIgnoreCase("List Reservations")) {
 			listReservations(passengers);
 		} else if (callingBtn.equalsIgnoreCase("Clear Console")) {
@@ -107,81 +108,36 @@ public class BookingGUI extends JFrame implements ActionListener {
 		}
 	}
 	
+	//handle external console calls
+	public static void consoleAppend(String s) {
+		console.append(s);
+	}
+	
 	//create the new booking
-	private Reservation[] createBooking(String fName, String lName, int numRes, Object seat, String from, String to, String departDate, String returnDate) {
+	private Reservation[] createBooking(String fName, String lName, int numRes, String seat, String from, String to, String departDate, String returnDate) {
 		Reservation[] p = this.passengers;
-		Date dd = dateCreate(departDate);
-		Date rd = dateCreate(returnDate);
-		if(dateCheck(departDate) & dateCheck(returnDate) & checkReturnDate(dd, rd) & seatCheck(seatE.getSelectedItem(), p)) {
+		do {
+			console.append("Please input valid Reservation:\n");
 			passengers = new Reservation[numReservation + 1];
 			for (int i = 0; i < numReservation; i++) {
 				passengers[i] = p[i];
 			}
-			passengers[numReservation] = new Reservation(fName, lName, ++numRes, seat, from, to, dd, rd);
+			passengers[numReservation] = new Reservation(fName, lName, ++numRes, seat, from, to, departDate, returnDate);
 			console.append("Reservation completed for " + fNameE.getText() + "!\n");
 			p = passengers;
 			++numReservation;
 			return p;
-		} else {
-			console.append("Could not create reservation, please try again...\n");
-			return null;
-		}
+		} while (!Reservation.reservationError);
 	}
 	
-	//check date format
-	private boolean dateCheck(String date) {
-		boolean dateCheck = true;
-		if(date.isEmpty()) {
-			console.append("Date is missing\n");
-			dateCheck = false;
-		} else {
-			try {
-				new SimpleDateFormat("MM/dd/yyyy").parse(date);
-			} catch (ParseException e1) {
-				dateCheck = false;
-			}		
-		}
-		return dateCheck;
+	//create list for JComboBox
+	private static String[] comboAssembler() {
+		String[] combo = Reservation.comboSeats;
+		return combo;
 	}
 	
-	//check date order
-	public boolean checkReturnDate(Date departureDate, Date returnDate) {
-		boolean returnGood = false;
-		if(returnDate != null) {
-			if(returnDate.after(departureDate)) {
-				returnGood = true;
-			} else {
-				console.append("Return must follow Departure.\n");
-			}
-		}
-		return returnGood;
-	}
-	
-	//create date variable
-	private Date dateCreate(String date) {
-		SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
-		try {
-			Date goodDate = formatter.parse(date);
-			return goodDate;
-		} catch (ParseException e1) {
-			console.append("Invalid Date Format!  Please use mm/dd/yyyy\n");
-			return null;
-		}		
-	}
-
-	//check for repeated seats
-	private boolean seatCheck(Object seat, Reservation[] p) {
-		boolean seatCheck = true;
-		if(numReservation != 0) {
-			for (int i = 0; i < numReservation; i++) {
-				if(p[i].getSeat().toString().equalsIgnoreCase(seat.toString())) {
-					console.append("This seat has already been reserved.  Please choose another.\n");
-					seatCheck = false;
-					return seatCheck;
-				}
-			}
-		}
-		return seatCheck;
+	public static String[][] getSeatAssign() {
+		return seatAssign;
 	}
 
 	//output a reservation list
@@ -192,22 +148,6 @@ public class BookingGUI extends JFrame implements ActionListener {
 		} else {
 			console.append("There are no passengers currently reserved.\n");
 		}
-	}
-
-	//create the seat choices for the combobox
-	private String[] createSeats(int size) {
-		String[] seats = new String[size];
-		String[] seat = {"a", "b", "c", "d"};
-		String[] row = {"1", "2", "3", "4", "5", "6", "7"};
-		int k = 0;
-		for (int i = 0; i < 7; i++) {
-			for (int j = 0; j < 4; j++) {
-				String chair = row[i] + seat[j];
-				seats[k] = chair;
-				k++;
-			}
-		}
-		return seats;
 	}
 	
 	//start the gui

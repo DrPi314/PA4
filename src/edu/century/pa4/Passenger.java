@@ -5,7 +5,6 @@ public class Passenger {
 	private String fName;
 	private String lName;
 	private int reservationNo;
-	Reservation[] reservation;
 	
 	//default constructor
 	public Passenger() {
